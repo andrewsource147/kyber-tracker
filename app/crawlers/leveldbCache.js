@@ -8,15 +8,15 @@ const request   = require('superagent');
 const Utils     = require('../common/Utils');
 const logger    = require('sota-core').getLogger('leveldbCache');
 const web3      = Utils.getWeb3Instance();
+const network = require('../../config/network');
+const CONSTANTS = require('../common/Const')
 // TODO: refactor this mess
 const db = level(path.join(__dirname, '../../db/level'));
 const LOCAL_CMC_DATA = {};
 
-const {
-  erc20Contract,
-  internalContract,
-  
-}
+logger.info('+++++++internal contract', network.contractAddresses.internal)
+const internalContract = new web3.eth.Contract(CONSTANTS.ABIS.INTERNAL_NETWORK, network.contractAddresses.internal)
+
 
 function getBlockTimestamp (blockNumber, callback) {
   const key = getBlockTimestampKey(blockNumber);
@@ -201,16 +201,36 @@ function searchPriceInLocalData (tokenInfo, timeInMillis, prices, callback) {
   }
 }
 
-function getReserveType (reserveAddr, callback){
+function getAllReserve(callback){
+  return internalContract.methods.getReserves().call(callback)
+}
 
+function getReserveType (reserveAddr, callback){
+  return internalContract.methods.reserveType(reserveAddr).call(callback)
 }
 
 function getReserveTokensList (reserveAddr, callback){
+  const reserveContract = new web3.eth.Contract(CONSTANTS.ABIS.RESERVE, reserveAddr)
 
+  reserveContract.methods.conversionRatesContract().call((err, conversionRateAddr) => {
+    if(err || !conversionRateAddr) return callback(err || "no conversion rate contract addr")
+
+    const conversionRatesContract = new web3.eth.Contract(CONSTANTS.ABIS.CONVERSION_RATE, conversionRateAddr)
+
+    return conversionRatesContract.methods.getListedTokens().call(callback)
+  })
+}
+
+function getPermissionlessTokensList (reserveAddr, callback){
+  const permisionLessContract = new web3.eth.Contract(CONSTANTS.ABIS.NONE_RESERVE, reserveAddr)
+  
+  return permisionLessContract.methods.contracts().call((err, result)=> {
+    return callback(err, result && [result.token])
+  })
 }
 
 function getTokenInfoFromNetwork (tokenAddr, callback){
-
+  // contract.erc20Contract.methods
   return {
     name,
     decimals,
@@ -223,3 +243,9 @@ function getTokenInfoFromNetwork (tokenAddr, callback){
 
 module.exports.getBlockTimestamp = getBlockTimestamp;
 module.exports.getCoinPrice = getCoinPrice;
+
+module.exports.getAllReserve = getAllReserve;
+module.exports.getReserveType = getReserveType;
+
+module.exports.getReserveTokensList = getReserveTokensList
+module.exports.getPermissionlessTokensList = getPermissionlessTokensList

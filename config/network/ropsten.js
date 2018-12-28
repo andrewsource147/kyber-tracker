@@ -5,6 +5,7 @@ module.exports = {
   },
   "contractAddresses": {
     "wrapper": "0x9de0a60F4A489e350cD8E3F249f4080858Af41d3",
+    "internal": "0x65897adcba42dcca5dd162c647b1cc3e31238490",
     "networks": ["0x0a56d8a49E71da8d7F9C65F95063dB48A3C9560B"],
     "feeBurners": ["0x89B5c470559b80e541E53eF78244edD112c7C58A", "0x89B5c470559b80e541E53eF78244edD112c7C58A"],
     "workers": []

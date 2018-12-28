@@ -223,22 +223,21 @@ function getReserveTokensList (reserveAddr, callback){
 
 function getPermissionlessTokensList (reserveAddr, callback){
   const permisionLessContract = new web3.eth.Contract(CONSTANTS.ABIS.NONE_RESERVE, reserveAddr)
-  
+
   return permisionLessContract.methods.contracts().call((err, result)=> {
     return callback(err, result && [result.token])
   })
 }
 
-function getTokenInfoFromNetwork (tokenAddr, callback){
-  // contract.erc20Contract.methods
-  return {
-    name,
-    decimals,
-    address,
-    symbol,
-    isOfficial: false
-  }
-
+function getTokenInfo (tokenAddr, type, callback){
+  const tokenContract = new web3.eth.Contract(CONSTANTS.ABIS.ERC20, tokenAddr)
+  async.parallelLimit({
+    name: tokenContract.methods.name().call,
+    decimals: tokenContract.methods.name().call,
+    address: asyncCb => asyncCb(null, tokenAddr),
+    symbol: tokenContract.methods.symbol().call,
+    type: asyncCb => asyncCb(null, type)
+  }, 10, callback)
 }
 
 module.exports.getBlockTimestamp = getBlockTimestamp;
@@ -249,3 +248,5 @@ module.exports.getReserveType = getReserveType;
 
 module.exports.getReserveTokensList = getReserveTokensList
 module.exports.getPermissionlessTokensList = getPermissionlessTokensList
+
+module.exports.getTokenInfo = getTokenInfo

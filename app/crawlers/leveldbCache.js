@@ -12,6 +12,12 @@ const web3      = Utils.getWeb3Instance();
 const db = level(path.join(__dirname, '../../db/level'));
 const LOCAL_CMC_DATA = {};
 
+const {
+  erc20Contract,
+  internalContract,
+  
+}
+
 function getBlockTimestamp (blockNumber, callback) {
   const key = getBlockTimestampKey(blockNumber);
   db.get(key, (err, ret) => {
@@ -193,6 +199,26 @@ function searchPriceInLocalData (tokenInfo, timeInMillis, prices, callback) {
   } else {
     searchPriceInLocalData(tokenInfo, timeInMillis, prices.slice(searchIndex, len), callback);
   }
+}
+
+function getReserveType (reserveAddr, callback){
+
+}
+
+function getReserveTokensList (reserveAddr, callback){
+
+}
+
+function getTokenInfoFromNetwork (tokenAddr, callback){
+
+  return {
+    name,
+    decimals,
+    address,
+    symbol,
+    isOfficial: false
+  }
+
 }
 
 module.exports.getBlockTimestamp = getBlockTimestamp;

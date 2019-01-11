@@ -222,25 +222,26 @@ module.exports = BaseService.extends({
     });
   },
 
-  getCoingeckoHistoryPrice: function(symbol, date, callback){
-    if (!symbol || typeof symbol !== 'string') {
-      return callback(`Cannot get historical price of invalid symbol: ${symbol}`);
+  getCoingeckoHistoryPrice: function(cgId, date, callback){
+    logger.info(`_getHistoricalPrice ` + cgId);
+    if (!cgId || typeof cgId !== 'string') {
+      return callback(`Cannot get historical price of invalid symbol: ${cgId}`);
     }
 
-    const tokenInfo = global.GLOBAL_TOKEN[symbol];
-    if (!tokenInfo) {
-      return callback(`Cannot find token info of symbol: ${symbol}`);
-    }
+    // const tokenInfo = global.GLOBAL_TOKEN[symbol];
+    // if (!tokenInfo) {
+    //   return callback(`Cannot find token info of symbol: ${symbol}`);
+    // }
 
-    if(!tokenInfo.cgId){
-      return callback(`Token ${symbol} dont have coigecko id`);
-    }
+    // if(!tokenInfo.cgId){
+    //   return callback(`Token ${symbol} dont have coigecko id`);
+    // }
 
-    this._getCoingeckoHistoryPrice(tokenInfo.cgId, date, callback)
+    this._getCoingeckoHistoryPrice(cgId, date, callback)
   },
   
   _getCoingeckoHistoryPrice: function(cgId, date, callback){
-    logger.debug(`_getHistoricalPrice ` + cgId);
+    
 
     request
       .get(`https://api.coingecko.com/api/v3/coins/${cgId}/history?date=${date}`)

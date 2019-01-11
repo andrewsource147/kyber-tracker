@@ -10,7 +10,8 @@ const networkConfig               = require('../../config/network');
 const ExSession                   = require('sota-core').load('common/ExSession');
 const logger                      = require('sota-core').getLogger('TradeCrawler');
 const configFetcher               = require('./configFetcher')
-
+const network = require('../../config/network');
+const ethConfig = network.ETH
 
 let UNPROCESSED_TRADES = [];
 const BATCH_TRADES_SIZE = parseInt(process.env.BATCH_TRADES_SIZE || 10);
@@ -31,22 +32,21 @@ class EthVolumeCrawler {
 
   start () {
     async.auto({
-      config: (next) => {
-        configFetcher.fetchConfigTokens((err, tokens) => {
-          if(err) return next(err)
-          tokenConfig = {...tokenConfig, ...tokens}
-          // processTokens(tokenConfig)
-          return next(null, processTokens(tokenConfig))
-        })
-      },
-      unprocessedTrades: ['config', (ret, next) => {
-        global.GLOBAL_TOKEN=ret.config.tokensBySymbol
+      // config: (next) => {
+      //   configFetcher.fetchConfigTokens((err, tokens) => {
+      //     if(err) return next(err)
+      //     tokenConfig = {...tokenConfig, ...tokens}
+      //     // processTokens(tokenConfig)
+      //     return next(null, processTokens(tokenConfig))
+      //   })
+      // },
+      unprocessedTrades: (next) => {
+        // global.GLOBAL_TOKEN=ret.config.tokensBySymbol
         if (UNPROCESSED_TRADES.length > 0) {
           return next(null, UNPROCESSED_TRADES);
         }
-
         getUnprocessedTrades(next, "KyberTradeModel");
-      }],
+      },
       processTrades: ['unprocessedTrades', (ret, next) => {
         this.processTrades(ret.unprocessedTrades, next);
       }]
@@ -111,7 +111,7 @@ class EthVolumeCrawler {
 
 
     async.each(Object.keys(dateTrade), (date, asyncCallback) => {
-      CMCService.getCoingeckoHistoryPrice('ETH', date, (err, result) => {
+      CMCService.getCoingeckoHistoryPrice(ethConfig.cgId, date, (err, result) => {
         if(err) return asyncCallback(err)
 
         dateTrade[date].usdPrice = result.price_usd

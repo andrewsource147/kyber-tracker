@@ -40,10 +40,8 @@ class TradeCrawler {
         })
       },
       latestProcessedBlock: ['config', (ret, next) => {
-        global.GLOBAL_TOKEN=ret.config.tokensBySymbol
+        // global.GLOBAL_TOKEN=ret.config.tokensBySymbol
         global.TOKENS_BY_ADDR=ret.config.tokensByAddress
-
-        logger.info("********^^^^^^^^^^^", global.TOKENS_BY_ADDR)
         if (LATEST_PROCESSED_BLOCK > 0) {
           return next(null, LATEST_PROCESSED_BLOCK);
         }

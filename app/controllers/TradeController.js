@@ -15,7 +15,7 @@ module.exports = AppController.extends({
 
   getTradesList: function (req, res) {
     const [err, params] = new Checkit({
-      symbol: ['string'],
+      address: ['string'],
       page: ['required', 'natural'],
       limit: ['required', 'naturalNonZero'],
       fromDate: ['naturalNonZero'],
@@ -29,16 +29,16 @@ module.exports = AppController.extends({
     }
     
     let key = `${CacheInfo.TradesList.key + params.page}-${params.limit}`;
-    if (params.symbol) {
-      const token = global.GLOBAL_TOKEN[params.symbol];
-      if (!token || !Utils_Common.shouldShowToken(params.symbol)) {
+    if (params.address) {
+      const token = global.TOKENS_BY_ADDR[params.address];
+      if (!token || !Utils_Common.shouldShowToken(params.address)) {
           res.json({
               s: "error",
-              errmsg: "unknown_symbol " + params.symbol
+              errmsg: "unknown_address " + params.address
           });
           return;
       }
-      key = params.symbol + '-' + key;
+      key = params.address + '-' + key;
     }
     if (params.fromDate) {
       key = params.fromDate + '-' + key;
@@ -50,7 +50,6 @@ module.exports = AppController.extends({
       key = 'official-' + key
     }
 
-    console.log("__________________cache key", key)
     const TradeService = req.getService('TradeService');
     RedisCache.getAsync(key, (err, ret) => {
       if (err) {
@@ -201,7 +200,7 @@ module.exports = AppController.extends({
 
   getVolumes: function (req, res) {
     const [err, params] = new Checkit({
-      symbol: ['string'],
+      address: ['string'],
       period: ['string'],
       interval: ['string'],
       fromDate: ['natural'],
@@ -268,7 +267,7 @@ module.exports = AppController.extends({
 
   getCollectedFees: function (req, res) {
     const [err, params] = new Checkit({
-      symbol: ['string'],
+      address: ['string'],
       interval: ['string'],
       period: ['string'],
       fromDate: ['natural'],
@@ -287,7 +286,7 @@ module.exports = AppController.extends({
 
   getToBurnFees: function (req, res) {
     const [err, params] = new Checkit({
-      symbol: ['string'],
+      address: ['string'],
       interval: ['string'],
       period: ['string'],
       fromDate: ['natural'],
@@ -306,7 +305,7 @@ module.exports = AppController.extends({
 
   getToWalletFees: function (req, res) {
     const [err, params] = new Checkit({
-      symbol: ['string'],
+      address: ['string'],
       interval: ['string'],
       period: ['string'],
       fromDate: ['natural'],

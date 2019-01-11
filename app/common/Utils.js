@@ -29,11 +29,11 @@ module.exports = {
     return tokensByAddress[address.toLowerCase()] || null;
   },
 
-  shouldShowToken: function(tokenSymbol, tokenList, timeStamp) {
-    tokenList = tokenList || global.GLOBAL_TOKEN;
-    if(!tokenList[tokenSymbol].hidden) return true;
-    if (typeof tokenList[tokenSymbol].hidden != 'number') return false;
-    return (timeStamp || Date.now()) >= tokenList[tokenSymbol].hidden;
+  shouldShowToken: function(tokenAddress, tokenList, timeStamp) {
+    tokenList = tokenList || global.TOKENS_BY_ADDR;
+    if(!tokenList[tokenAddress].hidden) return true;
+    if (typeof tokenList[tokenAddress].hidden != 'number') return false;
+    return (timeStamp || Date.now()) >= tokenList[tokenAddress].hidden;
   },
 
   filterOfficial(official, tokenData){

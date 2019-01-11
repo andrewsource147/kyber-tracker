@@ -25,7 +25,8 @@ const intervalUpdateConfig = () => {
         return logger.error(err);
       }
       const processedTokens = processTokens(tokens)
-      global.GLOBAL_TOKEN = {...network.tokens, ...processedTokens.tokensBySymbol}
+      // global.GLOBAL_TOKEN = {...network.tokens, ...processedTokens.tokensBySymbol}
+      global.TOKENS_BY_ADDR=ret.config.tokensByAddress
     })  
   }, timer);
 }
@@ -35,7 +36,8 @@ configFetcher.fetchConfigTokens((err, tokens) => {
     return logger.error(err);
   }
   const processedTokens = processTokens(tokens)
-  global.GLOBAL_TOKEN = {...network.tokens, ...processedTokens.tokensBySymbol}
+  // global.GLOBAL_TOKEN = {...network.tokens, ...processedTokens.tokensBySymbol}
+  global.TOKENS_BY_ADDR=ret.config.tokensByAddress
   
   intervalUpdateConfig()
   app.start();

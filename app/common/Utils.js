@@ -31,7 +31,9 @@ module.exports = {
 
   shouldShowToken: function(tokenAddress, tokenList, timeStamp) {
     tokenList = tokenList || global.TOKENS_BY_ADDR;
-    if(!tokenList[tokenAddress].hidden) return true;
+
+    if(!tokenList[tokenAddress.toLowerCase()] || !tokenList[tokenAddress.toLowerCase()].hidden) return true;
+    
     if (typeof tokenList[tokenAddress].hidden != 'number') return false;
     return (timeStamp || Date.now()) >= tokenList[tokenAddress].hidden;
   },
@@ -139,11 +141,11 @@ module.exports = {
     if(!arraySymbol) return queryString
     let arrayAddress = []
     arraySymbol.map(s => {
-      if(network[s]) arrayAddress.push(network[s].address)
+      if(network.tokens[s]) arrayAddress.push(network.tokens[s].address)
     })
     
     queryString = arrayAddress
-    .map(s => `!(maker_token_address = "${ethConfig.address}" AND taker_token_address = "${s}") AND !(maker_token_address = "${s}" AND taker_token_address = "${ethConfig.address}")`)
+    .map(s => `!(maker_token_address = "${ethConfig.address}" AND taker_token_address = "${s}") AND !(maker_token_address = "${s}" AND taker_token_address = "${ethConfig.address}") `)
     .join(' AND ')
 
     return ` AND (${queryString})`

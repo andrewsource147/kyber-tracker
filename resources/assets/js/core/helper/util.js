@@ -172,6 +172,9 @@ export default {
     // let icon = typeof this.tokens[symbol].icon !== 'undefined' ? this.tokens[symbol].icon : (symbol.toLowerCase() + ".svg");
     // return "https://raw.githubusercontent.com/KyberNetwork/KyberWallet/master/src/assets/img/tokens/" +
     //      icon + "?sanitize=true";
+  },
+  shortenAddress(address, startNum, endNum){
+    return address.slice(0, startNum) + '...' + address.slice(-endNum)
   }
 
 };

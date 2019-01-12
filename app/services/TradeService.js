@@ -50,8 +50,6 @@ module.exports = BaseService.extends({
       params.push(network.startPermissionlessReserveBlock);
     }
 
-    console.log("+++++ where clause: ", whereClauses)
-
     const queryOptions = {
       where: whereClauses,
       params: params,
@@ -98,7 +96,7 @@ module.exports = BaseService.extends({
     const adapter = this.getModel('KyberTradeModel').getSlaveAdapter();
 
     const officialSql = options.official ? 
-    ` AND ( block_number < ${network.startPermissionlessReserveBlock} OR (source_official = 1 AND dest_official = 1))`
+    ` AND ( block_number < ${network.startPermissionlessReserveBlock} OR (source_official = 1 AND dest_official = 1)) `
     :
     ''
 

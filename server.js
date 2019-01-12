@@ -12,10 +12,13 @@ const app = SotaCore.createServer({
   useSocket: false,
 });
 
-const processTokens = (tokens) => ({
-  tokensByAddress: _.keyBy(tokens, 'address'),
-  tokensBySymbol: _.keyBy(tokens, 'symbol')
-})
+const processTokens = (tokens) => {
+  const allToken = {...network.tokens, ...tokens}
+  return {
+    tokensByAddress: _.keyBy(allToken, 'address'),
+    tokensBySymbol: _.keyBy(allToken, 'symbol')
+  }
+}
 
 const intervalUpdateConfig = () => {
   setInterval(() => {
@@ -26,7 +29,7 @@ const intervalUpdateConfig = () => {
       }
       const processedTokens = processTokens(tokens)
       // global.GLOBAL_TOKEN = {...network.tokens, ...processedTokens.tokensBySymbol}
-      global.TOKENS_BY_ADDR=processedTokens.tokensByAddress
+      global.TOKENS_BY_ADDR = processedTokens.tokensByAddress
     })  
   }, timer);
 }

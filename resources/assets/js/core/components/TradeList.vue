@@ -166,10 +166,14 @@
           <tbody v-if="rows.length > 0">
             <tr v-for="(row, index) in rows" :item="row" :index="index">
               <td class="pl-4">{{ getDateInfo(row) }}</td>
-              <td class="text-left pl-4 font-semi-bold">{{ formatTokenNumber(row.takerTokenAddress, row.takerTokenAmount) }} {{ row.takerTokenSymbol }}</td>
+              <td class="text-left pl-4 font-semi-bold">{{ formatTokenNumber(row.takerTokenAddress, row.takerTokenAmount) }} {{ row.takerTokenSymbol }} 
+                <i>(<a :href="getAddressLink(row.takerTokenAddress)" target="_blank">{{getShortedAddr(row.takerTokenAddress)}}</a>)</i>
+              </td>
               <!-- <td class="text-left no-padding-right"></td> -->
               <td><i class="k k-angle right"></i></td>
-              <td class="text-left pl-4">{{ formatTokenNumber(row.makerTokenAddress, row.makerTokenAmount) }} {{ row.makerTokenSymbol }}</td>
+              <td class="text-left pl-4">{{ formatTokenNumber(row.makerTokenAddress, row.makerTokenAmount) }} {{ row.makerTokenSymbol }}
+                <i>(<a :href="getAddressLink(row.makerTokenAddress)" target="_blank">{{getShortedAddr(row.makerTokenAddress)}}</a>)</i>
+              </td>
               <!-- <td class="text-left"></td> -->
               <td class="text-left pl-4">1 <span class="font-semi-bold">{{ row.takerTokenSymbol }}</span> = {{ getRate(row) }} <span class="font-semi-bold">{{ row.makerTokenSymbol }}</span></td>
               <!-- <td>{{ row.makerTokenSymbol }}</td> -->
@@ -351,6 +355,12 @@ export default {
   methods: {
     getTxEtherscanLink(tx) {
       return network.endpoints.ethScan + "tx/" + tx;
+    },
+    getAddressLink(addr){
+      return network.endpoints.ethScan + "address/" + addr;
+    },
+    getShortedAddr(addr){
+      return util.shortenAddress(addr, 4, 4)
     },
     getAddressEtherscanLink(tx) {
       if(!util.isAddress(tx)) tx=partners[tx.toLowerCase()]

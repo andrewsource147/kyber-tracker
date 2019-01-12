@@ -5,7 +5,7 @@
       </div>
     <trade-list ref="datatable"
       :title="getListTitle()"
-      :getFilterTokenSymbol="getFilterTokenSymbol"
+      :getFilterTokenAddress="getFilterTokenAddress"
       :x="true"
       :isShowTotal="true"
       >
@@ -49,7 +49,7 @@ export default {
     getListTitle () {
       return '';
     },
-    getFilterTokenSymbol () {
+    getFilterTokenAddress () {
       return null;
     },
   },

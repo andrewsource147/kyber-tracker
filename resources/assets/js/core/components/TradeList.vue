@@ -264,7 +264,7 @@ const partners = network.partners
 
 export default {
   props: {
-    getFilterTokenSymbol: {
+    getFilterTokenAddress: {
       type: Function,
     },
     title: {
@@ -358,7 +358,7 @@ export default {
     },
     getRequestParams () {
       let params = {
-        symbol: this.getFilterTokenSymbol(),
+        address: this.getFilterTokenAddress(),
       };
 
       if(!this.isHideDatepicker){

@@ -54,7 +54,7 @@
     </b-card>
     <trade-list ref="datatable"
                 :title="getListTitle()"
-                :getFilterTokenSymbol="getFilterTokenSymbol"
+                :getFilterTokenAddress="getFilterTokenAddress"
                 :isHidePartnerCommission="true"
                 :isHideDatepicker="true"
                 :isHidePaginate="true"
@@ -117,10 +117,11 @@
       getListTitle() {
         return this.$t("common.network_activity");
       },
-      getFilterTokenSymbol() {
-        const tokenAddr = this.$route.params.tokenAddr;
-        const tokenDef = this.tokens[tokenAddr];
-        return tokenDef ? tokenDef.symbol : null;
+      getFilterTokenAddress() {
+        // const tokenAddr = this.$route.params.tokenAddr;
+        // const tokenDef = this.tokens[tokenAddr];
+        // return tokenDef ? tokenDef.symbol : null;
+        return this.$route.params.tokenAddr
       },
       selectPeriod(period, interval) {
         this.selectedPeriod = period;

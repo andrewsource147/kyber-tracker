@@ -1,7 +1,7 @@
 <template>
   <div class="col-sm-12">
     <trade-list ref="datatable"
-      :getFilterTokenSymbol="getFilterTokenSymbol"
+      :getFilterTokenAddress="getFilterTokenAddress"
       :fetch="requestSearch"
       :exportData="exportData"
       :isHideDatepicker="false"
@@ -51,7 +51,7 @@ export default {
       this.$refs.datatable.fetch();
     },
 
-    getFilterTokenSymbol () {
+    getFilterTokenAddress () {
       return undefined;
     },
     getSearchResultTitle(){

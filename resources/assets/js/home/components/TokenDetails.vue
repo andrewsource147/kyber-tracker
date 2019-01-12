@@ -2,21 +2,21 @@
   <div class="col-sm-12">
     <div class="panel-heading pb-16">
         <img class="token-logo-detail"  v-bind:src="this.logoUrl">
-        <span class="no-margin panel-title">{{this.symbol}} - {{this.tokenName}}</span>
+        <span class="no-margin panel-title">{{this.symbol}} {{this.tokenName}} <a :href="getAddressEtherscanLink(this.address)" target="_blank">{{this.address}}</a></span>
       </div>
 
-    <b-card :header="$t('chart.title.token_volume', [getFilterTokenSymbol()])">
+    <b-card :header="$t('chart.title.token_volume', [getFilterTokenAddress()])">
       <b-tab no-body active>
         <chart-volume ref="chartVolume"
           :elementId="'chart-volume'"
-          :tokenSymbol="getFilterTokenSymbol()">
+          :tokenSymbol="getFilterTokenAddress()">
         </chart-volume>
       </b-tab>
     </b-card>
 
     <trade-list ref="datatable"
       :title="getListTitle()"
-      :getFilterTokenSymbol="getFilterTokenSymbol">
+      :getFilterTokenAddress="getFilterTokenAddress">
     </trade-list>
   </div>
 </template>
@@ -29,7 +29,7 @@
   import BigNumber from 'bignumber.js';
   import AppRequest from '../../core/request/AppRequest';
   import util from '../../core/helper/util';
-  // import network from '../../../../../config/network';
+  import network from '../../../../../config/network';
   const TOKENS_BY_ADDR = window["GLOBAL_STATE"].tokens
   import Chart from 'chart.js';
 
@@ -65,12 +65,12 @@
           window.clearInterval(this._refreshInterval);
           return;
         }
-        this.symbol = this.getFilterTokenSymbol();
-        const tokenInfo = GLOBAL_TOKENS[this.symbol];
+        this.address = this.getFilterTokenAddress();
+        const tokenInfo = this.tokens[this.address];
         this.tokenName = tokenInfo.name;
         //const icon = tokenInfo.icon || (tokenInfo.symbol.toLowerCase() + ".svg");
         // this.logoUrl = "https://raw.githubusercontent.com/KyberNetwork/KyberWallet/master/src/assets/img/tokens/" + icon + "?sanitize=true";
-        this.logoUrl = util.getTokenIcon(tokenInfo.symbol, tokenInfo.icon, (replaceUrl) => {this.logoUrl = replaceUrl})
+        this.logoUrl = util.getTokenIcon(tokenInfo.symbol, (replaceUrl) => {this.logoUrl = replaceUrl})
         this.refreshChartsData();
         this.$refs.datatable.fetch();
       },
@@ -82,16 +82,19 @@
         this.selectedInterval = interval;
         this.refreshChartsData(period, interval, this.symbol);
       },
-      getFilterTokenSymbol() {
-        const tokenAddr = this.$route.params.tokenAddr;
-        const tokenDef = this.tokens[tokenAddr];
-        return tokenDef ? tokenDef.symbol : null;
+      getFilterTokenAddress() {
+        // const tokenAddr = this.$route.params.tokenAddr;
+        // const tokenDef = this.tokens[tokenAddr];
+        return this.$route.params.tokenAddr;
       },
       refreshChartsData () {
         if (this.$refs.chartVolume) {
           this.$refs.chartVolume.refresh(this.selectedPeriod, this.selectedInterval, this.symbol);
         }
       },
+      getAddressEtherscanLink(addr) {
+      return network.endpoints.ethScan + "address/" + addr;
+    },
     },
 
     watch: {
@@ -101,8 +104,8 @@
     },
 
     mounted() {
-      this.symbol = this.getFilterTokenSymbol();
-      if (!this.symbol) {
+      this.address = this.getFilterTokenAddress();
+      if (!this.address) {
         return;
       }
 

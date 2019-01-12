@@ -69,7 +69,9 @@
                     <span v-bind:class="{ tooltiptext: slot.item.isNewToken || slot.item.isDelisted }">{{ slot.item.isNewToken || slot.item.isDelisted ? slot.item.isNewToken ? $t("tooltip.new_coin") : $t("tooltip.delisted")  :"" }}</span>
                 </div>
             </td>
-          <td  class="text-left pl-1">{{ slot.item.symbol }}</td>
+          <td  class="text-left pl-1">{{ slot.item.symbol }} 
+            <i>(<a :href="getAddressLink(slot.item.address)" target="_blank">{{getShortedAddr(slot.item.address)}}</a>)</i>
+          </td>
           <td class="text-left pl-5" >{{ formatVolumeUSD(slot.item) }}</td>
           <td class="text-left pl-5">{{ slot.item.volumeETH }}</td>
           <!-- <td class="text-right">{{ slot.item.volumeToken }}<span class="td-inline-symbol">{{ slot.item.symbol }}</span></td>
@@ -120,7 +122,7 @@ import moment from 'moment';
 import BigNumber from 'bignumber.js';
 import AppRequest from '../../core/request/AppRequest';
 import util from '../../core/helper/util';
-// import network from '../../../../../config/network';
+import network from '../../../../../config/network';
 import Chart from 'chart.js';
 const TOKENS_BY_ADDR = window["GLOBAL_STATE"].tokens
 
@@ -144,6 +146,12 @@ export default {
     getListTitle () {
       return '';
     },
+    getAddressLink(addr){
+      return network.endpoints.ethScan + "address/" + addr;
+    },
+    getShortedAddr(addr){
+      return util.shortenAddress(addr, 4, 4)
+    },
     selectPeriod(period, interval) {
       this.selectedPeriod = period;
       this.selectedInterval = interval;
@@ -164,7 +172,7 @@ export default {
 
     shouldShowToken (item) {
       // return !this.tokens[item.symbol].hidden;
-      return util.shouldShowToken(item.symbol)
+      return util.shouldShowToken(item.address)
     },
 
     // isNewToken(item) {
@@ -181,9 +189,13 @@ export default {
       // return "https://raw.githubusercontent.com/KyberNetwork/KyberWallet/master/src/assets/img/tokens/" +
       //    icon + "?sanitize=true";
       if(!this.tokenIcons[token.address]){
-        this.tokenIcons[token.address] = util.getTokenIcon(this.tokens[token.address.toLowerCase()].symbol, (replaceUrl) => {
-          this.tokenIcons[token.address] = replaceUrl
-        })
+        if(!this.tokens[token.address.toLowerCase()] || !this.tokens[token.address.toLowerCase()].symbol) {
+          this.tokenIcons[token.address] = "/images/tokens/unknown-token.svg"
+        } else {
+          this.tokenIcons[token.address] = util.getTokenIcon(this.tokens[token.address.toLowerCase()].symbol, (replaceUrl) => {
+            this.tokenIcons[token.address] = replaceUrl
+          })
+        }
       }
        
       return this.tokenIcons[token.address]

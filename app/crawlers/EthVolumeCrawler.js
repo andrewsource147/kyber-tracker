@@ -32,21 +32,22 @@ class EthVolumeCrawler {
 
   start () {
     async.auto({
-      // config: (next) => {
-      //   configFetcher.fetchConfigTokens((err, tokens) => {
-      //     if(err) return next(err)
-      //     tokenConfig = {...tokenConfig, ...tokens}
-      //     // processTokens(tokenConfig)
-      //     return next(null, processTokens(tokenConfig))
-      //   })
-      // },
-      unprocessedTrades: (next) => {
+      config: (next) => {
+        configFetcher.fetchConfigTokens((err, tokens) => {
+          if(err) return next(err)
+          tokenConfig = {...tokenConfig, ...tokens}
+          // processTokens(tokenConfig)
+          return next(null, processTokens(tokenConfig))
+        })
+      },
+      unprocessedTrades: ['config', (ret, next) => {
         // global.GLOBAL_TOKEN=ret.config.tokensBySymbol
+        global.TOKENS_BY_ADDR=ret.config.tokensByAddress
         if (UNPROCESSED_TRADES.length > 0) {
           return next(null, UNPROCESSED_TRADES);
         }
         getUnprocessedTrades(next, "KyberTradeModel");
-      },
+      }],
       processTrades: ['unprocessedTrades', (ret, next) => {
         this.processTrades(ret.unprocessedTrades, next);
       }]

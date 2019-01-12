@@ -112,7 +112,7 @@ module.exports = BaseService.extends({
         from kyber_trade
         where block_timestamp > ? AND block_timestamp < ? ${UtilsHelper.ignoreToken(['WETH'])}
         ${officialSql}
-        group by ${side}_token_symbol`;
+        group by ${side}_token_address`;
         adapter.execRaw(sql, [options.fromDate, options.toDate], callback);
       };
       return obj;
@@ -140,7 +140,7 @@ module.exports = BaseService.extends({
         const supportedTokens = [];
 
         Object.keys(global.TOKENS_BY_ADDR).forEach((address) => {
-          if (UtilsHelper.shouldShowToken(address) && UtilsHelper.filterOfficial(options.official, global.TOKENS_BY_ADDR[symbol])) {
+          if (UtilsHelper.shouldShowToken(address) && UtilsHelper.filterOfficial(options.official, global.TOKENS_BY_ADDR[address])) {
             const token = global.TOKENS_BY_ADDR[address];
 
             const tokenVolume = sumProp(address, 'token', token.decimal);
@@ -223,6 +223,7 @@ module.exports = BaseService.extends({
             supportedTokens.push({
               symbol: token.symbol,
               name: token.name,
+              address: token.address,
               volumeToken: tokenVolume.toFormat(4).toString(),
               volumeTokenNumber: tokenVolume.toNumber(),
               volumeUSD: volumeUSD.toNumber(),

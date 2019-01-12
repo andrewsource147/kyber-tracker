@@ -63,7 +63,7 @@
           <!-- <td class="text-center">{{ (slot.index + 1) }}</td> -->
             <td class="pl-4">
                 <div class="token-name">
-                    <img class="image-inline-td mr-1" :src="tokenIcons[slot.item.symbol] || getTokenImageLink(slot.item.symbol)" />
+                    <img class="image-inline-td mr-1" :src="tokenIcons[slot.item.address] || getTokenImageLink(slot.item)" />
                     <span>{{ slot.item.name }}</span>
                     <span v-bind:class="{ fresher: slot.item.isNewToken, delised: slot.item.isDelisted }"></span>
                     <span v-bind:class="{ tooltiptext: slot.item.isNewToken || slot.item.isDelisted }">{{ slot.item.isNewToken || slot.item.isDelisted ? slot.item.isNewToken ? $t("tooltip.new_coin") : $t("tooltip.delisted")  :"" }}</span>
@@ -76,7 +76,7 @@
           <td><span class="pull-right">
               <i class="k k-angle right"></i>
             </span></td> -->
-          <td class="pointer text-right pr-5" @click="toTokenDetails(slot.item.symbol)">
+          <td class="pointer text-right pr-5" @click="toTokenDetails(slot.item.address)">
             <!-- <img src="/images/more.svg" /> -->
             <span class="entypo-dot-3 table-more"></span>
           </td>
@@ -94,7 +94,7 @@
       </template>
 
       <template slot="body" scope="slot" v-if="shouldShowToken(slot.item)">
-        <tr @click="toTokenDetails(slot.item.symbol)">
+        <tr @click="toTokenDetails(slot.item.address)">
           <td  class="text-left pl-4" style="white-space:nowrap !important">
               <div class="token-name">
                   <span>{{ slot.item.symbol }}</span>
@@ -173,20 +173,20 @@ export default {
     formatVolumeUSD (item) {
       return '$' + (new BigNumber(item.volumeUSD.toString())).toFormat(2);
     },
-    getTokenImageLink (symbol) {
+    getTokenImageLink (token) {
       // let icon = typeof this.tokens[symbol].icon !== 'undefined' ? this.tokens[symbol].icon : (symbol.toLowerCase() + ".svg");
       // // if (!this.tokens[symbol].hidden) {
       // //   return 'images/tokens/' + icon;
       // // }
       // return "https://raw.githubusercontent.com/KyberNetwork/KyberWallet/master/src/assets/img/tokens/" +
       //    icon + "?sanitize=true";
-      if(!this.tokenIcons[symbol]){
-        this.tokenIcons[symbol] = util.getTokenIcon(symbol, this.tokens[symbol].icon, (replaceUrl) => {
-          this.tokenIcons[symbol] = replaceUrl
+      if(!this.tokenIcons[token.address]){
+        this.tokenIcons[token.address] = util.getTokenIcon(this.tokens[token.address.toLowerCase()].symbol, (replaceUrl) => {
+          this.tokenIcons[token.address] = replaceUrl
         })
       }
        
-      return this.tokenIcons[symbol]
+      return this.tokenIcons[token.address]
 
     },
     

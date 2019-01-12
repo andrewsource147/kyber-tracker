@@ -153,19 +153,19 @@ export default {
     return /^(0x)?[0-9a-f]{40}$/i.test(address)
   },
 
-  getTokenIcon: (symbol, fileName, callback) => {
-    let iconName = fileName || (symbol.toLowerCase() + '.svg');
+  getTokenIcon: (symbol, callback) => {
+    let iconName = symbol.toLowerCase() + '.svg'
     let urlIcon = iconEndpont + '/' + iconName
 
-    if (!fileName) {
-      let img = new Image(); 
-      img.onerror = () => {
-        iconName = symbol.toLowerCase() + '.png';
-        urlIcon = iconEndpont + '/' + iconName
-        return callback(urlIcon)
-      };
-      img.src = urlIcon;
-    }
+    // if (!symbol) {
+    //   let img = new Image(); 
+    //   img.onerror = () => {
+    //     iconName = symbol.toLowerCase() + '.png';
+    //     urlIcon = iconEndpont + '/' + iconName
+    //     return callback(urlIcon)
+    //   };
+    //   img.src = urlIcon;
+    // }
 
     return urlIcon
     

@@ -82,7 +82,7 @@
   import util from '../../core/helper/util';
   // import network from '../../../../../config/network';
   import Chart from 'chart.js';
-  const GLOBAL_TOKENS = window["GLOBAL_STATE"].tokens
+  const TOKENS_BY_ADDR = window["GLOBAL_STATE"].tokens
   const defaultChartOptions = {
     legend: {
       display: false
@@ -94,7 +94,8 @@
     data() {
       return {
         pageSize: 10,
-        tokens: _.keyBy(_.values(GLOBAL_TOKENS), 'symbol'),
+        // tokens: _.keyBy(_.values(GLOBAL_TOKENS), 'symbol'),
+        tokens: TOKENS_BY_ADDR,
         selectedPeriod: 'D30',
         selectedInterval: 'D1',
         selectedTab: 'chartVolume',

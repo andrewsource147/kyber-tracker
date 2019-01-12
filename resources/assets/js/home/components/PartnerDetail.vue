@@ -25,7 +25,7 @@ import BigNumber from 'bignumber.js';
 import AppRequest from '../../core/request/AppRequest';
 import util from '../../core/helper/util';
 import network from '../../../../../config/network';
-const GLOBAL_TOKENS = window["GLOBAL_STATE"].tokens
+const TOKENS_BY_ADDR = window["GLOBAL_STATE"].tokens
 const partners = network.partners;
 // const tokens = network.tokens;
 import Chart from 'chart.js';
@@ -40,7 +40,8 @@ export default {
       totalCollectedFees: 0,
       searchFromDate: null,
       searchToDate: null,
-      tokens: _.keyBy(_.values(GLOBAL_TOKENS), 'address')
+      // tokens: _.keyBy(_.values(GLOBAL_TOKENS), 'address')
+      tokens: TOKENS_BY_ADDR
     };
   },
 

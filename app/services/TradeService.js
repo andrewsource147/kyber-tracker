@@ -23,16 +23,16 @@ module.exports = BaseService.extends({
 
     let params = [];
 
-    const supportedTokenList = _.filter(global.GLOBAL_TOKEN, (e) => {
-      return UtilsHelper.shouldShowToken(e.symbol)
-    }).map(x => x.symbol).join('\',\'')
+    const supportedTokenList = _.filter(global.TOKENS_BY_ADDR, (e) => {
+      return UtilsHelper.shouldShowToken(e.address)
+    }).map(x => x.address).join('\',\'')
 
-    let whereClauses = `(taker_token_symbol IN ('${supportedTokenList}') AND maker_token_symbol IN ('${supportedTokenList}'))` + UtilsHelper.ignoreToken(['WETH']);
+    let whereClauses = `(taker_token_address IN ('${supportedTokenList}') AND maker_token_address IN ('${supportedTokenList}'))` + UtilsHelper.ignoreToken(['WETH']);
 
-    if (options.symbol) {
-      whereClauses += ' AND (taker_token_symbol = ? OR maker_token_symbol = ?)';
-      params.push(options.symbol);
-      params.push(options.symbol);
+    if (options.address) {
+      whereClauses += ' AND (taker_token_address = ? OR maker_token_address = ?)';
+      params.push(options.address);
+      params.push(options.address);
     }
 
     if (options.fromDate) {
@@ -105,7 +105,7 @@ module.exports = BaseService.extends({
     const makeSql = (side, obj) => {
       obj = obj || {};
       obj[side] = (callback) => {
-        const sql = `select ${side}_token_symbol as symbol,
+        const sql = `select ${side}_token_address as address,
           sum(${side}_token_amount) as token,
           sum(volume_eth) as eth,
           sum(volume_usd) as usd
@@ -123,13 +123,13 @@ module.exports = BaseService.extends({
           return callback(err);
         }
 
-        const takers = _.keyBy(ret.taker, 'symbol');
-        const makers = _.keyBy(ret.maker, 'symbol');
+        const takers = _.keyBy(ret.taker, 'address');
+        const makers = _.keyBy(ret.maker, 'address');
 
-        const sumProp = (symbol, prop, decimals) => {
+        const sumProp = (address, prop, decimals) => {
           let val = new BigNumber(0);
-          if (takers[symbol]) val = val.plus((takers[symbol][prop] || 0).toString());
-          if (makers[symbol]) val = val.plus((makers[symbol][prop] || 0).toString());
+          if (takers[address]) val = val.plus((takers[address][prop] || 0).toString());
+          if (makers[address]) val = val.plus((makers[address][prop] || 0).toString());
 
           if (decimals) {
             return val.div(Math.pow(10, decimals));
@@ -139,23 +139,24 @@ module.exports = BaseService.extends({
 
         const supportedTokens = [];
 
-        Object.keys(global.GLOBAL_TOKEN).forEach((symbol) => {
-          if (UtilsHelper.shouldShowToken(symbol) && UtilsHelper.filterOfficial(options.official, global.GLOBAL_TOKEN[symbol])) {
-            const token = global.GLOBAL_TOKEN[symbol];
+        Object.keys(global.TOKENS_BY_ADDR).forEach((address) => {
+          if (UtilsHelper.shouldShowToken(address) && UtilsHelper.filterOfficial(options.official, global.TOKENS_BY_ADDR[symbol])) {
+            const token = global.TOKENS_BY_ADDR[address];
 
-            const tokenVolume = sumProp(symbol, 'token', token.decimal);
-            const volumeUSD = sumProp(symbol, 'usd');
-            const ethVolume = sumProp(symbol, 'eth');
+            const tokenVolume = sumProp(address, 'token', token.decimal);
+            const volumeUSD = sumProp(address, 'usd');
+            const ethVolume = sumProp(address, 'eth');
             supportedTokens.push({
               symbol: token.symbol,
+              address: token.address,
               name: token.name,
               volumeToken: tokenVolume.toFormat(4).toString(),
               volumeTokenNumber: tokenVolume.toNumber(),
               volumeUSD: volumeUSD.toNumber(),
               volumeETH: ethVolume.toFormat(4).toString(),
               volumeEthNumber: ethVolume.toNumber(),
-              isNewToken: UtilsHelper.isNewToken(token.symbol),
-              isDelisted: UtilsHelper.isDelisted(token.symbol)
+              isNewToken: UtilsHelper.isNewToken(token.address),
+              isDelisted: UtilsHelper.isDelisted(token.address)
             })
 
           }
@@ -177,14 +178,14 @@ module.exports = BaseService.extends({
     const makeSql = (side, obj) => {
       obj = obj || {};
       obj[side] = (callback) => {
-        const sql = `select ${side}_token_symbol as symbol,
+        const sql = `select ${side}_token_address as address,
           sum(${side}_token_amount) as token,
           sum(volume_eth) as eth,
           sum(volume_usd) as usd
         from kyber_trade
         where block_timestamp > ? AND block_timestamp < ? ${UtilsHelper.ignoreToken(['WETH'])}
         ${officialSql}
-        group by ${side}_token_symbol`;
+        group by ${side}_token_address`;
         adapter.execRaw(sql, [options.fromDate, options.toDate], callback);
       };
       return obj;
@@ -196,13 +197,13 @@ module.exports = BaseService.extends({
           return callback(err);
         }
 
-        const takers = _.keyBy(ret.taker, 'symbol');
-        const makers = _.keyBy(ret.maker, 'symbol');
+        const takers = _.keyBy(ret.taker, 'address');
+        const makers = _.keyBy(ret.maker, 'address');
 
-        const sumProp = (symbol, prop, decimals) => {
+        const sumProp = (address, prop, decimals) => {
           let val = new BigNumber(0);
-          if (takers[symbol]) val = val.plus((takers[symbol][prop] || 0).toString());
-          if (makers[symbol]) val = val.plus((makers[symbol][prop] || 0).toString());
+          if (takers[address]) val = val.plus((takers[address][prop] || 0).toString());
+          if (makers[address]) val = val.plus((makers[address][prop] || 0).toString());
 
           if (decimals) {
             return val.div(Math.pow(10, decimals));
@@ -211,13 +212,13 @@ module.exports = BaseService.extends({
         };
 
         const supportedTokens = [];
-        Object.keys(global.GLOBAL_TOKEN).forEach((symbol) => {
-          if (UtilsHelper.shouldShowToken(symbol, global.GLOBAL_TOKEN, options.timeStamp) && UtilsHelper.filterOfficial(options.official, global.GLOBAL_TOKEN[symbol])) {
-            const token = global.GLOBAL_TOKEN[symbol];
+        Object.keys(global.TOKENS_BY_ADDR).forEach((address) => {
+          if (UtilsHelper.shouldShowToken(address, global.TOKENS_BY_ADDR, options.timeStamp) && UtilsHelper.filterOfficial(options.official, global.TOKENS_BY_ADDR[address])) {
+            const token = global.TOKENS_BY_ADDR[address];
 
-            const tokenVolume = sumProp(symbol, 'token', token.decimal);
-            const volumeUSD = sumProp(symbol, 'usd');
-            const ethVolume = sumProp(symbol, 'eth');
+            const tokenVolume = sumProp(address, 'token', token.decimal);
+            const volumeUSD = sumProp(address, 'usd');
+            const ethVolume = sumProp(address, 'eth');
 
             supportedTokens.push({
               symbol: token.symbol,
@@ -227,8 +228,8 @@ module.exports = BaseService.extends({
               volumeUSD: volumeUSD.toNumber(),
               volumeETH: ethVolume.toFormat(4).toString(),
               volumeEthNumber: ethVolume.toNumber(),
-              isNewToken: UtilsHelper.isNewToken(token.symbol),
-              isDelisted: UtilsHelper.isDelisted(token.symbol)
+              isNewToken: UtilsHelper.isNewToken(token.address),
+              isDelisted: UtilsHelper.isDelisted(token.address)
             })
 
           }
@@ -617,8 +618,8 @@ module.exports = BaseService.extends({
     const period = options.period || 'D7';
     const time_exprire = CacheInfo.NetworkVolumes.TTL;
     let key = `${CacheInfo.NetworkVolumes.key + period}-${interval}`;
-    if (options.symbol) {
-      key = options.symbol + '-' + key;
+    if (options.address) {
+      key = options.address + '-' + key;
     }
     if (options.pair) {
       key = options.pair + '-' + key;
@@ -662,13 +663,13 @@ module.exports = BaseService.extends({
 
     let whereClauses = `block_timestamp > ? AND block_timestamp <= ? ${UtilsHelper.ignoreToken(['WETH'])}`;
     let params = [fromDate, toDate];
-    if (options.symbol) {
-      whereClauses += ' AND (taker_token_symbol = ? OR maker_token_symbol = ?)';
-      params.push(options.symbol);
-      params.push(options.symbol);
+    if (options.address) {
+      whereClauses += ' AND (taker_token_address = ? OR maker_token_address = ?)';
+      params.push(options.address.toLowerCase());
+      params.push(options.address.toLowerCase());
     } else if(options.pair){
       const pairTokens = options.pair.split('_')
-      whereClauses += ` AND ((taker_token_symbol = "${pairTokens[0]}" AND maker_token_symbol = "${pairTokens[1]}") OR (taker_token_symbol = "${pairTokens[1]}" AND maker_token_symbol = "${pairTokens[0]}"))`;
+      whereClauses += ` AND ((taker_token_address = "${pairTokens[0].toLowerCase()}" AND maker_token_address = "${pairTokens[1].toLowerCase()}") OR (taker_token_address = "${pairTokens[1]}" AND maker_token_address = "${pairTokens[0]}"))`;
     }
 
     if(options.official){
@@ -800,7 +801,7 @@ module.exports = BaseService.extends({
       params.push(options.toTime)
     }
 
-    sqlQuery += `${sqlQuery && " AND "} ((maker_token_symbol = "${options.tokens[0]}" AND taker_token_symbol = "${options.tokens[1]}") OR (maker_token_symbol = "${options.tokens[1]}" AND taker_token_symbol = "${options.tokens[0]}"))`
+    sqlQuery += `${sqlQuery && " AND "} ((maker_token_address = "${options.tokens[0].toLowerCase()}" AND taker_token_address = "${options.tokens[1].toLowerCase()}") OR (maker_token_address = "${options.tokens[1].toLowerCase()}" AND taker_token_address = "${options.tokens[0].toLowerCase()}"))`
 
     async.auto({
       volumeEth: (next) => {
@@ -958,8 +959,8 @@ module.exports = BaseService.extends({
     const period = options.period || 'D7';
 
     let key = `${CacheInfo.CollectedFees.key + period}-${interval}`;
-    if (options.symbol) {
-      key = options.symbol + '-' + key;
+    if (options.address) {
+      key = options.address + '-' + key;
     }
 
     if(options.official){
@@ -979,10 +980,10 @@ module.exports = BaseService.extends({
       let whereClauses = 'block_timestamp > ? AND block_timestamp <= ?';
       let params = [fromDate, toDate];
 
-      if (options.symbol) {
-        whereClauses += ' AND (taker_token_symbol = ? OR maker_token_symbol = ?)';
-        params.push(options.symbol);
-        params.push(options.symbol);
+      if (options.address) {
+        whereClauses += ' AND (taker_token_address = ? OR maker_token_address = ?)';
+        params.push(options.address.toLowerCase());
+        params.push(options.address.toLowerCase());
       }
 
       if(options.official){
@@ -1049,8 +1050,8 @@ module.exports = BaseService.extends({
     const period = options.period || 'D7';
 
     let key = `${CacheInfo.ToBurnFees.key + period}-${interval}`;
-    if (options.symbol) {
-      key = options.symbol + '-' + key;
+    if (options.address) {
+      key = options.address + '-' + key;
     }
 
     if(options.official){
@@ -1070,10 +1071,10 @@ module.exports = BaseService.extends({
       let whereClauses = 'block_timestamp > ? AND block_timestamp <= ?';
       let params = [fromDate, toDate];
 
-      if (options.symbol) {
-        whereClauses += ' AND (taker_token_symbol = ? OR maker_token_symbol = ?)';
-        params.push(options.symbol);
-        params.push(options.symbol);
+      if (options.address) {
+        whereClauses += ' AND (taker_token_address = ? OR maker_token_address = ?)';
+        params.push(options.address.toLowerCase());
+        params.push(options.address.toLowerCase());
       }
 
       if(options.official){

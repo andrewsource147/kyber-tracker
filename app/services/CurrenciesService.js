@@ -404,7 +404,7 @@ module.exports = BaseService.extends({
           let indexVolume = ret.volume ? ret.volume.map(v => v.token_symbol).indexOf(token) : -1
           if(indexVolume > -1){
             pairs["ETH_" + token].usd_24h_volume = ret.volume[indexVolume].volume_24h_usd
-            pairs["ETH_" + token].token_24h_volume = new BigNumber(ret.volume[indexVolume].volume_24h_token || 0).div(Math.pow(10, tokens[token].decimal)).toNumber()
+            pairs["ETH_" + token].token_24h_volume = ret.volume[indexVolume].volume_24h_token ? new BigNumber(ret.volume[indexVolume].volume_24h_token.toString() || 0).div(Math.pow(10, tokens[token].decimal)).toNumber() : 0
             pairs["ETH_" + token].eth_24h_volume = ret.volume[indexVolume].volume_24h_eth
           }
 
@@ -435,8 +435,8 @@ module.exports = BaseService.extends({
 
 
             // let lastTokenTrade = ret.lastTrade[indexlastTrade]
-            let bigMakerAmount = lastTokenTrade.maker_token_amount ? new BigNumber(lastTokenTrade.maker_token_amount) : new BigNumber(0)
-            let bigTakerAmount = lastTokenTrade.taker_token_amount ? new BigNumber(lastTokenTrade.taker_token_amount) : new BigNumber(0)
+            let bigMakerAmount = lastTokenTrade.maker_token_amount ? new BigNumber(lastTokenTrade.maker_token_amount.toString()) : new BigNumber(0)
+            let bigTakerAmount = lastTokenTrade.taker_token_amount ? new BigNumber(lastTokenTrade.taker_token_amount.toString()) : new BigNumber(0)
 
             if (lastTokenTrade.taker_token_symbol !== token && !bigMakerAmount.isZero()) {
               let amountTaker = lastTokenTrade.volume_eth; //bigTakerAmount.div(Math.pow(10, baseTokenData.decimal))

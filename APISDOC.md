@@ -564,6 +564,13 @@ Response:
 }
 }
 ```
+currentPrice: newest expected rate from network,
+
+lastPrice: rate caculate from the last trade,
+
+baseVolume: total eth volume of all trade with token (sum volume_eth where maker_token_symbol = symbol OR taker_token_symbol = symbol)
+
+quoteVolume: total token volume of all trade with token
 
 #### '/api/tokens/pairs'
 

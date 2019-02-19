@@ -700,9 +700,13 @@ Response:
 ```
 
 past_24h_high: highest rate buy in 24h
+
 past_24h_low: lowest rate buy in 24h
+
 current_bid: current buy rate from network
+
 current_ask: current sell rate from network
+
 last_traded: rate from the last trade
 
 #### '/api/change24h'  

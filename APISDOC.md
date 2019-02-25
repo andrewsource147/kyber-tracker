@@ -564,6 +564,13 @@ Response:
 }
 }
 ```
+currentPrice: newest expected rate from network,
+
+lastPrice: rate caculate from the last trade,
+
+baseVolume: total eth volume of all trade with token (sum volume_eth where maker_token_symbol = symbol OR taker_token_symbol = symbol)
+
+quoteVolume: total token volume of all trade with token
 
 #### '/api/tokens/pairs'
 
@@ -645,6 +652,7 @@ Response:
 }
 }
 ```
+rate is mid_expected rate
 
 #### '/api/tickers'    
 
@@ -697,6 +705,16 @@ Response:
   }
 }
 ```
+
+past_24h_high: highest rate buy in 24h
+
+past_24h_low: lowest rate buy in 24h
+
+current_bid: current buy rate from network
+
+current_ask: current sell rate from network
+
+last_traded: rate from the last trade
 
 #### '/api/change24h'  
 

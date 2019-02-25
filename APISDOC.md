@@ -13,7 +13,7 @@ Input Request Parameters
 | ----------| ---------|------|-----------------------------|
 |symbol|STRING|NO| Symbol of currency. If `null` will return all trades of all tokens with Kyber Network contract|
 |page|INT|YES|Start from 0. Default is value `0`. The page index of the response data. Each page includes maximum 1000 records.|
-|limit|INT|NO| Limit number of trades each page. (default is `20`)|
+|limit|INT|YES| Limit number of trades each page.|
 |fromDate|INT|NO| Limit start time of trades in ms. If `null` will return all trades from blockno 5060595|
 |toDate|INT|NO| Limit end time of trades in ms. If `null` will return all trades to current block|
 |offcial|BOOL|NO| true or false (default is true). If `false` will return all trades of all tokens (offical and unoffical trades), if `true` will return only offical|
@@ -754,7 +754,7 @@ Input Request Parameters
 
 |Name | Type | Required | Description |
 | ----------| ---------|------|-----------------------------|
-|symbol|STRING|YES| Symbol of currency. If `null` will return all history of all tokens with Kyber Network contract|
+|symbol|STRING|YES| Symbol of currency|
 |resolution|STRING|YES| resolution of chart data|
 |from|INT|YES| Limit start time of trades in ms|
 |to|INT|YES| Limit end time of trades in ms|
